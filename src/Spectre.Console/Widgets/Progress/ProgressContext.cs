@@ -68,6 +68,21 @@ namespace Spectre.Console
         }
 
         /// <summary>
+        /// Removes a Task
+        /// </summary>
+        /// <param name="task">The task to remove.</param>
+        public void RemoveTask(ProgressTask task)
+        {
+            lock (_taskLock)
+            {
+                if (_tasks.Contains(task))
+                {
+                    _tasks.Remove(task);
+                }
+            }
+        }
+
+        /// <summary>
         /// Refreshes the current progress.
         /// </summary>
         public void Refresh()
