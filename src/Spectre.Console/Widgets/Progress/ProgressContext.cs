@@ -68,7 +68,7 @@ namespace Spectre.Console
         }
 
         /// <summary>
-        /// Removes a Task
+        /// Removes a Task.
         /// </summary>
         /// <param name="task">The task to remove.</param>
         public void RemoveTask(ProgressTask task)
