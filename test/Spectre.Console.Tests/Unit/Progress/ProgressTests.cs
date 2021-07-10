@@ -244,6 +244,46 @@ namespace Spectre.Console.Tests.Unit
         }
 
         [Fact]
+        public void Removed_Tasks_Should_Not_Show()
+        {
+            // Given
+            var console = new TestConsole()
+                .Width(10)
+                .Interactive()
+                .EmitAnsiSequences();
+
+            var taskRemoved = default(ProgressTask);
+            var taskInProgress1 = default(ProgressTask);
+            var taskInProgress2 = default(ProgressTask);
+
+            var progress = new Progress(console)
+                .Columns(new[] { new ProgressBarColumn() })
+                .AutoRefresh(false)
+                .AutoClear(false);
+
+            // When
+            progress.Start(ctx =>
+            {
+                taskInProgress1 = ctx.AddTask("foo");
+                taskRemoved = ctx.AddTask("bar");
+                taskInProgress2 = ctx.AddTask("baz");
+                taskInProgress2.Increment(20);
+                ctx.RemoveTask(taskRemoved);
+                // taskRemoved.Value = taskRemoved.MaxValue;
+            });
+
+            // Then
+            console.Output
+                .NormalizeLineEndings()
+                .ShouldBe(
+                    "[?25l" + // Hide cursor
+                    "          \n" + // top padding
+                    "[38;5;8m━━━━━━━━━━[0m\n" + // taskInProgress1
+                    "[38;5;11m━━[0m[38;5;8m━━━━━━━━[0m\n" + // taskInProgress2
+                    "          \n" + // bottom padding
+                    "[?25h"); // show cursor
+        }
+        [Fact]
         public void Should_Report_Max_Remaining_Time_For_Extremely_Small_Progress()
         {
             // Given
